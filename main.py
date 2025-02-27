@@ -50,6 +50,11 @@ def main():
         # Update all objects
         updatable.update(dt)
 
+        for Asteroid_unit in asteroids:
+            if player_instance.is_colliding(Asteroid_unit):
+                running = False
+                print ("Game over!")
+
         # Draw everything
         screen.fill((0, 0, 0))  # Clear the screen (black background)
         for obj in drawable:
