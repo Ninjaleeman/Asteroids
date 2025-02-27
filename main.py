@@ -1,15 +1,14 @@
+import sys
 import pygame
 from player import Player
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
-
+from shot import Shot
 
 def main():
     # Game initialization
     print("Starting Asteroids!")
-    print(f"Screen width: {SCREEN_WIDTH}")
-    print(f"Screen height: {SCREEN_HEIGHT}")
 
     pygame.init()
     
@@ -25,6 +24,7 @@ def main():
     updatable = pygame.sprite.Group()  # Objects to be updated
     drawable = pygame.sprite.Group()   # Objects to be drawn
     asteroids = pygame.sprite.Group()  # Specific group for asteroids
+    shots = pygame.sprite.Group()      #Specific group for shots
 
     # Link Player to sprite groups
     Player.containers = (updatable, drawable)
@@ -33,27 +33,30 @@ def main():
     Asteroid.containers = (asteroids, updatable, drawable)
 
     # Link AsteroidField to updatable group
-    AsteroidField.containers = (updatable,)
+    AsteroidField.containers = (updatable)
+
+    #Link Shot to sprite groups
+    Shot.containers = (updatable,drawable,shots)
 
     # Create initial game objects
     player_instance = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Center the player
     asteroid_field_instance = AsteroidField()  # Spawn initial asteroid field
 
     # Main game loop
-    running = True
-    while running:
+    
+    while True:
         # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                return
 
         # Update all objects
         updatable.update(dt)
 
         for Asteroid_unit in asteroids:
-            if player_instance.is_colliding(Asteroid_unit):
-                running = False
+            if player_instance.collides_with(Asteroid_unit):
                 print ("Game over!")
+                sys.exit()
 
         # Draw everything
         screen.fill((0, 0, 0))  # Clear the screen (black background)
