@@ -1,64 +1,66 @@
 import pygame
-from player import *
-from constants import *
+from player import Player
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from asteroid import Asteroid
+from asteroidfield import AsteroidField
 
 
 def main():
+    # Game initialization
     print("Starting Asteroids!")
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
 
-    # Initialize all of pygame
     pygame.init()
-
-    #Create a clock object to manage the frame time
-    clock = pygame.time.Clock()
-    dt = 0      #delta time aka track the time between frames
-
-    # Set up the game window
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))  # Fixed typo
+    
+    # Screen setup
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Asteroids")
 
+    # Timing
+    clock = pygame.time.Clock()
+    dt = 0  # Delta time: track time between frames
 
-    #Set to spawn player in middle of screen
-    center_x = SCREEN_WIDTH/2
-    center_y = SCREEN_HEIGHT/2
+    # Sprite groups
+    updatable = pygame.sprite.Group()  # Objects to be updated
+    drawable = pygame.sprite.Group()   # Objects to be drawn
+    asteroids = pygame.sprite.Group()  # Specific group for asteroids
 
-    player_instance = Player(center_x, center_y)
+    # Link Player to sprite groups
+    Player.containers = (updatable, drawable)
 
-    #create groups updatable and drawable
-    updatable  = pygame.sprite.Group()
-    drawable = pygame.sprite.Group()
+    # Link Asteroid to sprite groups
+    Asteroid.containers = (asteroids, updatable, drawable)
 
-    #add Player object to updatable and drawable
-    updatable.add(player_instance)
-    drawable.add(player_instance)
+    # Link AsteroidField to updatable group
+    AsteroidField.containers = (updatable,)
+
+    # Create initial game objects
+    player_instance = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Center the player
+    asteroid_field_instance = AsteroidField()  # Spawn initial asteroid field
 
     # Main game loop
-    while True:  # Infinite loop for the game
+    running = True
+    while running:
+        # Event handling
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:  # Allow user to close the window
-                pygame.quit()
-                return
-            
+            if event.type == pygame.QUIT:
+                running = False
+
+        # Update all objects
         updatable.update(dt)
 
-        # Fill the screen with black
-        screen.fill((0, 0, 0))
-
-
-
-        #using groups to draw
+        # Draw everything
+        screen.fill((0, 0, 0))  # Clear the screen (black background)
         for obj in drawable:
             obj.draw(screen)
 
-        # Update the display
-        pygame.display.flip()
+        pygame.display.flip()  # Refresh the display
 
-        #cap frame rate to 60 and calculate dt
+        # Cap frame rate to 60 FPS and calculate delta time
         dt = clock.tick(60) / 1000
 
-        
+    pygame.quit()
 
 
 if __name__ == "__main__":

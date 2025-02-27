@@ -4,6 +4,8 @@ from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_SPEED
 
 
 class Player(CircleShape):
+  containers = None
+
   def __init__(self, x, y, rotation=0):
 
     #initializing Player object that inherits from CircleShape
